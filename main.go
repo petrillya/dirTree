@@ -5,7 +5,8 @@ import (
 	"os"
 )
 
-func listDir(dir string) error {
+func listDir(dir string, count int) error {
+	var haveFolder bool = false
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		panic(err)
@@ -13,9 +14,27 @@ func listDir(dir string) error {
 
 	for _, entrie := range entries {
 		if entrie.IsDir() {
-			fmt.Println(entrie.Name())
+			haveFolder = true
+			break
+		}
+	}
 
-			listDir(dir + "/" + entrie.Name())
+	if haveFolder {
+		count += 1
+	} else {
+		count -= 1
+	}
+
+	for _, entrie := range entries {
+		if entrie.IsDir() {
+			for i := 1; i < count; i++ {
+				fmt.Print("\t")
+			}
+
+			fmt.Println("├───" + entrie.Name())
+
+			haveFolder = false
+			listDir(dir+"/"+entrie.Name(), count)
 		}
 	}
 
@@ -23,5 +42,5 @@ func listDir(dir string) error {
 }
 
 func main() {
-	listDir("./")
+	listDir("./", 0)
 }
